@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<extension key="cards.iwwa.belgium" type="module">
+  <file>belgium</file>
+  <name>CivIWWA Belgian functionality</name>
+  <description>General useful features for Belgium.</description>
+  <license>AGPL-3.0</license>
+  <maintainer>
+    <author>Johan Vervloet</author>
+    <email>johanv@johanv.org</email>
+  </maintainer>
+  <urls>
+    <url desc="Main Extension Page">https://github.com/johanv/belgium</url>
+    <url desc="Documentation">https://github.com/johanv/belgium</url>
+    <url desc="Support">https://github.com/johanv/belgium</url>
+    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+  </urls>
+  <releaseDate>2017-04-12</releaseDate>
+  <version>1.0</version>
+  <compatibility>
+    <ver>4.7</ver>
+  </compatibility>
+  <comments>Guesses provinces and preferred languages based on postal code.</comments>
+  <civix>
+    <namespace>CRM/Belgium</namespace>
+  </civix>
+</extension>
