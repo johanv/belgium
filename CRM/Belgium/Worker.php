@@ -34,7 +34,7 @@ class CRM_Belgium_Worker {
    */
   public function updateProvince($addressId, $postalCode) {
     is_numeric($addressId) or die('$addressId should be numerical.');
-    $stateProvinceId = CRM_Belgium_Logic::guessProvince($postalCode);
+    $stateProvinceId = CRM_Belgium_Logic::getProvince($postalCode);
     $result = civicrm_api3('Address', 'get', [
       'id' => $addressId,
       // Belgium
@@ -59,22 +59,7 @@ class CRM_Belgium_Worker {
   public function updatePreferredLanguage($addressId, $postalCode) {
     is_numeric($addressId) or die('$addressId should be numerical.');
     is_numeric($postalCode) or die('$postalCode should be numerical.');
-    $stateProvinceId = CRM_Belgium_Logic::guessProvince($postalCode);
-    if (empty($stateProvinceId)) {
-      return;
-    }
-    $nl = [1785, 1789, 1792, 1793, 1794];
-    $fr = [1786, 1787, 1788, 1790, 1791];
-    $lang = NULL;
-    if (in_array($stateProvinceId, $nl)) {
-      // This should actually be nl_BE, but that doesn't seem to exist in
-      // CiviCRM.
-      $lang = 'nl_NL';
-    }
-    else if (in_array($stateProvinceId, $fr)) {
-      // The same is true for fr_BE.
-      $lang = 'fr_FR';
-    }
+    $lang = CRM_Belgium_Logic::getLanguage($postalCode);
     if (!empty($lang)) {
       // Only change preferred language if it isn't already set.
       civicrm_api3('Address', 'get', [
@@ -95,6 +80,7 @@ class CRM_Belgium_Worker {
    * Create database tables for this extension.
    */
   public function createTables() {
+    // TODO: make table name configurable.
     $sql = 'CREATE TABLE IF NOT EXISTS belgium_postal_code(
         postal_code INTEGER NOT NULL PRIMARY KEY,
         location VARCHAR(64) NOT NULL,
@@ -111,5 +97,57 @@ class CRM_Belgium_Worker {
   public function dropTables() {
     $sql = "DROP TABLE belgium_postal_code";
     CRM_Core_DAO::executeQuery($sql);
+  }
+
+  /**
+   * Imports the data from the csv file.
+   *
+   * @return TRUE if import succeeded.
+   */
+  public function importData() {
+    $file = realpath(__DIR__ . '/../../') . '/data_sources/postal_codes.csv';
+    $handle = fopen($file, 'r');
+    if (!$handle) {
+      return FALSE;
+    }
+    while (($line = fgets($handle)) !== FALSE) {
+      $fields = explode(',', $line);
+      if (!is_numeric($fields[0])) {
+        // skip invalid lines.
+        continue;
+      }
+      // First delete existing postal code, so that running the import twice
+      // is not a problem.
+      $sql = 'DELETE FROM belgium_postal_code WHERE postal_code = %1';
+      $params = [1 => [$fields[0], 'Integer']];
+      CRM_Core_DAO::executeQuery($sql, $params);
+
+      // CRM_Core_DAO doesn't seem to handle NULL very well. So convert NULL
+      // to the empty string.
+      $provinceId = CRM_Belgium_Logic::getProvince($fields[0]);
+      if ($provinceId == NULL) {
+        $provinceId = '';
+      }
+      $lang = CRM_Belgium_Logic::getLanguage($fields[0]);
+      if ($lang == NULL) {
+        $lang = '';
+      }
+
+      $sql = '
+          INSERT INTO belgium_postal_code(postal_code, location, municipality, state_province_id, preferred_language)
+          VALUES(%1,%2,%3,%4,%5)';
+      $params = [
+        1 => [intval($fields[0]), 'Integer'],
+        2 => [$fields[1], 'String'],
+        3 => [$fields[2], 'String'],
+        // getProvince returns an integer or null, and it seems that there is
+        // no parameter type for nullable integer :-(
+        4 => [$provinceId, 'String'],
+        5 => [$lang, 'String'],
+      ];
+      CRM_Core_DAO::executeQuery($sql, $params);
+    }
+    fclose($handle);
+    return TRUE;
   }
 }

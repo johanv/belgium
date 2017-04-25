@@ -34,6 +34,7 @@ class CRM_Belgium_Upgrader extends CRM_Belgium_Upgrader_Base {
 
   public function install() {
     $this->worker->createTables();
+    $this->worker->importData();
   }
 
   public function uninstall() {
@@ -43,9 +44,9 @@ class CRM_Belgium_Upgrader extends CRM_Belgium_Upgrader_Base {
   /**
    * There were no tables in version 1.0, so let's create them.
    */
-  public function upgrade_4700() {
+  public function upgrade_4701() {
     // createTables won't do anything if the tables already exist.
     $this->worker->createTables();
-    return TRUE;
+    return $this->worker->importData();
   }
 }

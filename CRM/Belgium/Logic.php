@@ -2,6 +2,7 @@
 /*
   cards.iwwa.belgium - Useful features for Belgium
   Copyright (C) 2017  Johan Vervloet
+  Issues #1, #2 Copyright (C) 2017  Chirojeugd-Vlaanderen vzw
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -23,12 +24,13 @@
 class CRM_Belgium_Logic {
   /**
    * Returns the state_province_id that probably corresponds with the postal code.
+   *
    * @param int $postalCode
    * @return int state_province_id
    *
-   * TODO: Use constants instead of magic numbers for provinces.
+   * TODO: import provinces from CSV, and use (cached) provinces from database.
    */
-  public static function guessProvince($postalCode) {
+  public static function getProvince($postalCode) {
     is_numeric($postalCode) || die('$postalCode should be numerical.');
     if ($postalCode < 1300) {
       // Brussels Hoofdstedelijk Gewest
@@ -85,4 +87,33 @@ class CRM_Belgium_Logic {
     return $stateProvinceId;
   }
 
+  /**
+   * Returns the preferred language that probably corresponds with the postal code.
+   *
+   * @param int $postalCode
+   * @return string preferred_language
+   *
+   * TODO: import languages from CSV, and use (cached) languages from database.
+   */
+  public static function getLanguage($postalCode) {
+    is_numeric($postalCode) || die('$postalCode should be numerical.');
+
+    $stateProvinceId = CRM_Belgium_Logic::getProvince($postalCode);
+    if (empty($stateProvinceId)) {
+      return NULL;
+    }
+    $nl = [1785, 1789, 1792, 1793, 1794];
+    $fr = [1786, 1787, 1788, 1790, 1791];
+    $lang = NULL;
+    if (in_array($stateProvinceId, $nl)) {
+      // This should actually be nl_BE, but that doesn't seem to exist in
+      // CiviCRM.
+      $lang = 'nl_NL';
+    }
+    else if (in_array($stateProvinceId, $fr)) {
+      // The same is true for fr_BE.
+      $lang = 'fr_FR';
+    }
+    return $lang;
+  }
 }
