@@ -82,7 +82,8 @@ class CRM_Belgium_Worker {
   public function createTables() {
     // TODO: make table name configurable.
     $sql = 'CREATE TABLE IF NOT EXISTS belgium_postal_code(
-        postal_code INTEGER NOT NULL PRIMARY KEY,
+        id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        postal_code INTEGER NOT NULL,
         location VARCHAR(64) NOT NULL,
         municipality VARCHAR(64) NOT NULL,
         state_province_id INTEGER,
@@ -110,17 +111,17 @@ class CRM_Belgium_Worker {
     if (!$handle) {
       return FALSE;
     }
+    // Remove existing postal codes, and import again.
+    // TODO: update existing codes instead of deleting and reimporting.
+    $sql = 'TRUNCATE belgium_postal_code';
+    CRM_Core_DAO::executeQuery($sql);
+
     while (($line = fgets($handle)) !== FALSE) {
-      $fields = explode(',', $line);
+      $fields = explode(',', trim($line));
       if (!is_numeric($fields[0])) {
         // skip invalid lines.
         continue;
       }
-      // First delete existing postal code, so that running the import twice
-      // is not a problem.
-      $sql = 'DELETE FROM belgium_postal_code WHERE postal_code = %1';
-      $params = [1 => [$fields[0], 'Integer']];
-      CRM_Core_DAO::executeQuery($sql, $params);
 
       // CRM_Core_DAO doesn't seem to handle NULL very well. So convert NULL
       // to the empty string.
