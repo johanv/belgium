@@ -90,4 +90,26 @@ class CRM_Belgium_Worker {
       ]);
     }
   }
+
+  /**
+   * Create database tables for this extension.
+   */
+  public function createTables() {
+    $sql = 'CREATE TABLE IF NOT EXISTS belgium_postal_code(
+        postal_code INTEGER NOT NULL PRIMARY KEY,
+        location VARCHAR(64) NOT NULL,
+        municipality VARCHAR(64) NOT NULL,
+        state_province_id INTEGER,
+        preferred_language VARCHAR(5)
+      )';
+    CRM_Core_DAO::executeQuery($sql);
+  }
+
+  /**
+   * Drops database tables for this extension.
+   */
+  public function dropTables() {
+    $sql = "DROP TABLE belgium_postal_code";
+    CRM_Core_DAO::executeQuery($sql);
+  }
 }
