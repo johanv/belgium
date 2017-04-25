@@ -2,6 +2,7 @@
 /*
   cards.iwwa.belgium - Useful features for Belgium
   Copyright (C) 2017  Johan Vervloet
+  Issues #1, #2 Copyright (C) 2017  Chirojeugd-Vlaanderen vzw
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -154,6 +155,10 @@ function belgium_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 /**
  * Implements hook_civicrm_post().
  *
+ * If province and preferred language autodetection don't work, make sure that
+ * the CiviCRM variables `belgium_disable_province_autodetection` and
+ * `belgium_disable_language_autodetection` are empty.
+ *
  * @param $op
  * @param $objectName
  * @param $objectId
@@ -165,15 +170,19 @@ function belgium_civicrm_post($op, $objectName, $objectId, &$objectRef) {
     $stateProvinceId = NULL;
     // The 'null' as string is a strange CiviCRM thing in forms. It is a bug
     // by design or something.
-    if (!(empty($objectRef->street_province_id) || $objectRef->street_province_id == 'null')) {
-      $stateProvinceId = $objectRef->state_province_id;
+    if (!(empty($objectRef->postal_code) || $objectRef->postal_code == 'null')) {
+      // A postal code is given.
+      if (empty($objectRef->state_province_id) || $objectRef->state_province_id == 'null') {
+        // If state_province_id is not explicitly given
+        // do an educated guess. (only if the province autodetection is not
+        // disabled.)
+        empty(Civi::settings()
+          ->get('belgium_disable_province_autodetection')) and $worker->updateProvince($objectId, $objectRef->postal_code);
+      }
+      // Also update preferred language, if it's not already set.
+      empty(Civi::Settings()
+        ->get('belgium_disable_language_autodetection')) and $worker->updatePreferredLanguage($objectId, $objectRef->postal_code);
     }
-    else if (!(empty($objectRef->postal_code) || $objectRef->postal_code == 'null')) {
-      // If state_province_id is not explicitly given in the call, we will
-      // do an educated guess.
-      $stateProvinceId = $worker->updateProvince($objectId, $objectRef->postal_code);
-    }
-    $worker->updatePreferredLanguage($objectId, $stateProvinceId);
   }
 }
 

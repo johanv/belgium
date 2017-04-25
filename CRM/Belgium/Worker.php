@@ -2,6 +2,7 @@
 /*
   cards.iwwa.belgium - Useful features for Belgium
   Copyright (C) 2017  Johan Vervloet
+  Issues #1, #2 Copyright (C) 2017  Chirojeugd-Vlaanderen vzw
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -32,7 +33,7 @@ class CRM_Belgium_Worker {
    * in advance, we can do all logic in one chained call.
    */
   public function updateProvince($addressId, $postalCode) {
-    is_numeric($addressId) || die('$addressId should be numerical.');
+    is_numeric($addressId) or die('$addressId should be numerical.');
     $stateProvinceId = CRM_Belgium_Logic::guessProvince($postalCode);
     $result = civicrm_api3('Address', 'get', [
       'id' => $addressId,
@@ -50,25 +51,27 @@ class CRM_Belgium_Worker {
    * If the contact of the address has no preferred language, guess.
    *
    * @param int $addressId
-   * @param int|null $streetProvinceId
+   * @param int $postalCode
    *
-   * Again, we could look up $streetProvinceId, but this saves an API call.
+   * Again, we could look up $postalCode, but this saves an API call.
+   * FIXME: Inconsistency: This function doesn't overwrite, updateProvince does.
    */
-  public function updatePreferredLanguage($addressId, $streetProvinceId) {
-    is_numeric($addressId) || die('$addressId should be numerical.');
-    if (empty($streetProvinceId)) {
+  public function updatePreferredLanguage($addressId, $postalCode) {
+    is_numeric($addressId) or die('$addressId should be numerical.');
+    is_numeric($postalCode) or die('$postalCode should be numerical.');
+    $stateProvinceId = CRM_Belgium_Logic::guessProvince($postalCode);
+    if (empty($stateProvinceId)) {
       return;
     }
-    is_numeric($streetProvinceId) || die('$postalCode should be numerical.');
     $nl = [1785, 1789, 1792, 1793, 1794];
     $fr = [1786, 1787, 1788, 1790, 1791];
     $lang = NULL;
-    if (in_array($streetProvinceId, $nl)) {
+    if (in_array($stateProvinceId, $nl)) {
       // This should actually be nl_BE, but that doesn't seem to exist in
       // CiviCRM.
       $lang = 'nl_NL';
     }
-    else if (in_array($streetProvinceId, $fr)) {
+    else if (in_array($stateProvinceId, $fr)) {
       // The same is true for fr_BE.
       $lang = 'fr_FR';
     }
