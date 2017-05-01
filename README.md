@@ -2,6 +2,18 @@
 
 Extension with some tools for Belgium
 
+This extension depends on:
+
+* [org.civicoop.configitems](https://github.com/CiviCooP/org.civicoop.configitems)
+  to configure the available currencies. This may be overkill.
+* [be.chiro.civi.queryapitools](https://github.com/Chirojeugd-Vlaanderen/queryapitools)
+  to create the `PostalCode` API. This is a temporary hack, it would be better to
+  [create a proper entity](https://docs.civicrm.org/dev/en/master/extensions/civix/#generate-entity).
+  You can choose not to install queryapitools, in that case you can't use the
+  `PostalCode` api.
+  
+It offers the following goodies:
+
 ## Automatically assign province and preferred language
 
 With this extension enabled, if you create or update a Belgian address, the
@@ -12,6 +24,22 @@ using the API, otherwise CiviCRM will use the default language from the
 settings, I presume.)
 
 This determination is not 100% correct, but I accept pull requests, as always.
+
+## Some typical Belgian configuration
+
+This extension changes some settings of your CiviCRM extension. The idea is
+to apply some sensible settings for Belgian CiviCRM instances:
+
+* date format (d/m/y)
+* currency (EUR)
+* default country (Belgium)
+* ; as field separator (to please Belgian Excel, argh)
+* address format and mailing format
+
+The extension also changes the default language to nl_NL, but this change
+is only useful for the Dutch speaking part of Belgium. This is still a bug, there
+should be a way to choose a language (Dutch, French, German, English). Maybe using a
+setting.
 
 ## PostalCode.get API
 

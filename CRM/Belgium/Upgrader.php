@@ -49,4 +49,40 @@ class CRM_Belgium_Upgrader extends CRM_Belgium_Upgrader_Base {
     $this->worker->createTables();
     return $this->worker->importData();
   }
+
+  /**
+   * Belgian settings (#4).
+   */
+  public function upgrade_4702() {
+    civicrm_api3('Setting', 'create', [
+      // Date format
+      'dateformatDatetime' => '%E %B %Y %H:%M',
+      'dateformatFull' => '%E %B %Y',
+      'dateformatPartial' => '%B %Y',
+      'dateformatFinancialBatch' => '%d/%m/%Y',
+      'dateformatshortdate' => '%d/%m/%Y',
+      'dateInputFormat' => 'dd/mm/yy',
+      // Currencies
+      'defaultCurrency' => 'EUR',
+      'monetaryThousandSeparator' => '',
+      // Default country
+      'defaultContactCountry' => 1020,
+      // For the Belgian Excel god:
+      'fieldSeparator' => ';',
+      // Language
+      'lcMessages' => 'nl_NL',
+      // Currency settings
+      'moneyformat' => '%c %a',
+      'moneyvalueformat' => '%!i',
+      // Label and adress format
+      'address_format' => "{contact.address_name}\n{contact.supplemental_address_1}\n{contact.street_address}\n{contact.supplemental_address_2}\n{contact.postal_code}{ }{contact.city}\n{contact.country}",
+      'mailing_format' => "{contact.addressee}\n{contact.supplemental_address_1}\n{contact.street_address}\n{contact.supplemental_address_2}\n{contact.postal_code}{ }{contact.city}\n{contact.country}",
+    ]);
+
+    // Apply configuration as defined in the json files in the resources folder:
+    civicrm_api3('Civiconfig', 'load_json', [
+      'path' => realpath(__DIR__ . '/../../') . '/resources/'
+    ]);
+    return TRUE;
+  }
 }

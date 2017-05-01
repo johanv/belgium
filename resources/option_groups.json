@@ -1,0 +1,16 @@
+{
+  "currencies_enabled": {
+    "name": "currencies_enabled",
+    "title": "currencies_enabled",
+    "is_reserved": 1,
+    "option_values": {
+      "EUR": {
+        "label": "EUR (€)",
+        "value": "EUR",
+        "name": "EUR",
+        "is_default": 1,
+        "is_reserved": 1
+      }
+    }
+  }
+}
