@@ -64,7 +64,7 @@ class CRM_Belgium_Upgrader extends CRM_Belgium_Upgrader_Base {
       'dateInputFormat' => 'dd/mm/yy',
       // Currencies
       'defaultCurrency' => 'EUR',
-      'monetaryThousandSeparator' => '',
+      'monetaryThousandSeparator' => ' ',
       // Default country
       'defaultContactCountry' => 1020,
       // For the Belgian Excel god:
