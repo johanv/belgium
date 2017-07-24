@@ -32,58 +32,67 @@ class CRM_Belgium_Logic {
    */
   public static function getProvince($postalCode) {
     is_numeric($postalCode) || die('$postalCode should be numerical.');
+    $id_belgium = civicrm_api3("Country", "getsingle", array(
+       "return" => array("id"),
+       "name" => "Belgium"
+    ) )["id"];
+    $params = array(
+       "return" => array("id"),
+       "country_id" => $id_belgium,
+    );
     if ($postalCode < 1300) {
       // Brussels Hoofdstedelijk Gewest
-      $stateProvinceId = 5217;
+      $params["name"] = "Brussels";
     }
     else if ($postalCode < 1500) {
       // Brabant Wallon
-      $stateProvinceId = 1786;
+      $params["name"] = "Brabant Wallon";
     }
     else if ($postalCode < 2000) {
       // Vlaams Brabant, part 1
-      $stateProvinceId = 1793;
+      $params["name"] = "Vlaams-Brabant";
     }
     else if ($postalCode < 3000) {
       // Antwerpen
-      $stateProvinceId = 1785;
+      $params["name"] = "Antwerpen";
     }
     else if ($postalCode < 3500) {
       // Vlaams Brabant, part 2
-      $stateProvinceId = 1973;
+       $params["name"] = "Vlaams-Brabant";
     }
     else if ($postalCode < 4000) {
       // Limburg
-      $stateProvinceId = 1789;
+      $params["name"] = "Limburg";
     }
     else if ($postalCode < 5000) {
       // Liège
-      $stateProvinceId = 1788;
+      $params["name"] = "Liege";
     }
     else if ($postalCode < 6000) {
       // Namur
-      $stateProvinceId = 1791;
+      $params["name"] = "Namur";
     }
     else if ($postalCode < 6600) {
       // Hainaut, part 1
-      $stateProvinceId = 1787;
+      $params["name"] = "Hainaut";
     }
     else if ($postalCode < 7000) {
       // Luxembourg
-      $stateProvinceId = 1790;
+      $params["name"] = "Luxembourg";
     }
     else if ($postalCode < 8000) {
       // Hainaut, part 2
-      $stateProvinceId = 1787;
+      $params["name"] = "Hainaut";
     }
     else if ($postalCode < 9000) {
       // West-Vlaanderen
-      $stateProvinceId = 1794;
+      $params["name"] = "West-Vlaanderen";
     }
     else {
       // Oost-Vlaanderen
-      $stateProvinceId = 1792;
+      $params["name"] = "Oost-Vlaanderen";
     }
+    $stateProvinceId = civicrm_api3("StateProvince", "getSingle",$params) ["id"];
     return $stateProvinceId;
   }
 
