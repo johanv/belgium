@@ -33,6 +33,10 @@ class CRM_Belgium_Worker {
    * in advance, we can do all logic in one chained call.
    */
   public function updateProvince($addressId, $postalCode) {
+    if (!is_numeric($postalCode)) {
+      // TODO: some logging would not hurt.
+      return;
+    }
     is_numeric($addressId) or die('$addressId should be numerical.');
     $stateProvinceId = CRM_Belgium_Logic::getProvince($postalCode);
     $result = civicrm_api3('Address', 'get', [
@@ -57,8 +61,10 @@ class CRM_Belgium_Worker {
    * FIXME: Inconsistency: This function doesn't overwrite, updateProvince does.
    */
   public function updatePreferredLanguage($addressId, $postalCode) {
-    is_numeric($addressId) or die('$addressId should be numerical.');
-    is_numeric($postalCode) or die('$postalCode should be numerical.');
+    if (!is_numeric($addressId) || !is_numeric($postalCode)) {
+      // TODO: some logging would not hurt.
+      return;
+    }
     $lang = CRM_Belgium_Logic::getLanguage($postalCode);
     if (!empty($lang)) {
       // Only change preferred language if it isn't already set.
