@@ -85,4 +85,12 @@ class CRM_Belgium_Upgrader extends CRM_Belgium_Upgrader_Base {
     ]);
     return TRUE;
   }
+
+  public function upgrade_4703(){
+    $this->worker->createTables();
+    $this->worker->importData();
+    return TRUE;
+  }
+
+
 }

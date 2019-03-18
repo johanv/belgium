@@ -37,7 +37,7 @@ class CRM_Belgium_Logic {
        "name" => "Belgium"
     ) )["id"];
     $params = array(
-       "return" => array("id"),
+       "return" => "id",
        "country_id" => $id_belgium,
     );
     if ($postalCode < 1300) {
@@ -92,7 +92,7 @@ class CRM_Belgium_Logic {
       // Oost-Vlaanderen
       $params["name"] = "Oost-Vlaanderen";
     }
-    $stateProvinceId = civicrm_api3("StateProvince", "getSingle",$params) ["id"];
+    $stateProvinceId = civicrm_api3("StateProvince", "getValue",$params);
     return $stateProvinceId;
   }
 

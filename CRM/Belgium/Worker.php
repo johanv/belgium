@@ -92,7 +92,7 @@ class CRM_Belgium_Worker {
         postal_code INTEGER NOT NULL,
         location VARCHAR(64) NOT NULL,
         municipality VARCHAR(64) NOT NULL,
-        state_province_id INTEGER,
+        state_province_id INTEGER references civicrm_state_province(id),
         preferred_language VARCHAR(5)
       )';
     CRM_Core_DAO::executeQuery($sql);
