@@ -43,7 +43,7 @@ function _civicrm_api3_postal_code_Get_spec(&$spec) {
  * @return array API result descriptor
  * @see civicrm_api3_create_success
  * @see civicrm_api3_create_error
- * @throws API_Exception
+ * @throws CRM_Core_Exception
  */
 function civicrm_api3_postal_code_Get($params) {
   // I think a field 'id' is required, so I will just 'recycle' the postal
