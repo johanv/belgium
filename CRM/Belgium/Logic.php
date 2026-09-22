@@ -32,14 +32,14 @@ class CRM_Belgium_Logic {
    */
   public static function getProvince($postalCode) {
     is_numeric($postalCode) || die('$postalCode should be numerical.');
-    $id_belgium = civicrm_api3("Country", "getsingle", array(
-       "return" => array("id"),
+    $id_belgium = civicrm_api3("Country", "getsingle", [
+       "return" => ["id"],
        "name" => "Belgium"
-    ) )["id"];
-    $params = array(
+    ] )["id"];
+    $params = [
        "return" => "id",
        "country_id" => $id_belgium,
-    );
+    ];
     if ($postalCode < 1300) {
       // Brussels Hoofdstedelijk Gewest
       $params["name"] = "Brussels";
